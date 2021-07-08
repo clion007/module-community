@@ -357,7 +357,7 @@ abstract class Actions extends \Magento\Backend\App\Action
         $error = false;
         try {
             foreach ($ids as $id) {
-                $this->_objectManager->create($this->_modelClass)->setId($id)->delete();
+                $this->_objectManager->create($this->_modelClass)->load($id)->delete();
             }
         } catch (\Magento\Framework\Exception\LocalizedException $e) {
             $error = true;
@@ -514,6 +514,11 @@ abstract class Actions extends \Magento\Backend\App\Action
             $this->_model = $this->_objectManager->create($this->_modelClass);
 
             $id = (int)$this->getRequest()->getParam($this->_idKey);
+            $idFieldName = $this->_model->getResource()->getIdFieldName();
+            if (!$id && $this->_idKey !== $idFieldName) {
+                $id = (int)$this->getRequest()->getParam($idFieldName);
+            }
+
             if ($id && $load) {
                 $this->_model->load($id);
             }
